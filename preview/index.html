@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ColorOS Aquamorphic Launcher - Interactive Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --aqua-blue: #0A84FF;
+      --aqua-cyan: #00E5FF;
+      --aqua-green: #30D158;
+      --aqua-orange: #FF9F0A;
+      --aqua-purple: #BF5AF2;
+      --glass-surface: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.22);
+      --glass-dock: rgba(14, 23, 42, 0.55);
+      --glass-folder: rgba(22, 33, 62, 0.5);
+      --phone-w: 390px;
+      --phone-h: 810px;
+      --squircle-r: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 50% 20%, #0d1b2a 0%, #050a12 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    /* Top Showcase Bar */
+    .showcase-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      color: var(--aqua-cyan);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--aqua-cyan);
+      box-shadow: 0 0 10px var(--aqua-cyan);
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 40%, var(--aqua-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 14px;
+    }
+
+    /* Layout Wrapper */
+    .stage {
+      display: flex;
+      align-items: flex-start;
+      gap: 36px;
+      perspective: 1200px;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      width: 320px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .controls-panel h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--aqua-cyan);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-chip:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-chip.active {
+      background: var(--aqua-blue);
+      border-color: var(--aqua-cyan);
+      box-shadow: 0 0 15px rgba(10, 132, 255, 0.4);
+      font-weight: 600;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .toggle-row span {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--aqua-blue); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .info-card {
+      background: rgba(0, 229, 255, 0.06);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 14px;
+    }
+
+    /* Device Mockup */
+    .device-shell {
+      position: relative;
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: #000;
+      border-radius: 50px;
+      box-shadow: 0 0 0 10px #1a2230,
+                  0 0 0 12px #2d3748,
+                  0 30px 60px rgba(0, 0, 0, 0.8),
+                  0 0 80px rgba(10, 132, 255, 0.25);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+    }
+
+    /* Screen Container */
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0f1d;
+    }
+
+    /* Top Camera Hole */
+    .punch-hole {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 13px;
+      height: 13px;
+      background: #000;
+      border-radius: 50%;
+      z-index: 100;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+    }
+
+    /* Status Bar */
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 44px;
+      padding: 12px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 90;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    /* Parallax Wallpaper Layer */
+    .wallpaper-layer {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle at 30% 25%, #183b6b 0%, #0a1728 55%, #030710 100%);
+      z-index: 1;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out, filter 0.3s ease;
+    }
+
+    .water-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      transition: transform 0.1s ease-out;
+    }
+
+    .orb-1 {
+      width: 280px;
+      height: 280px;
+      top: 10%;
+      right: -10%;
+      background: rgba(0, 229, 255, 0.35);
+    }
+
+    .orb-2 {
+      width: 320px;
+      height: 320px;
+      bottom: 20%;
+      left: -20%;
+      background: rgba(10, 132, 255, 0.4);
+    }
+
+    .orb-3 {
+      width: 220px;
+      height: 220px;
+      top: 45%;
+      left: 30%;
+      background: rgba(191, 90, 242, 0.22);
+    }
+
+    /* Pager 3D Viewport */
+    .pager-viewport {
+      position: absolute;
+      top: 44px;
+      bottom: 110px;
+      left: 0;
+      right: 0;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      z-index: 10;
+    }
+
+    .page-stage {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.25, 1);
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 10px 18px;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-1 {
+      transform: translateZ(0);
+    }
+
+    .page-2 {
+      transform: translateX(100%) translateZ(0);
+    }
+
+    /* 3D Cube Transition Classes */
+    .transition-cube .page-stage {
+      transform-style: preserve-3d;
+    }
+
+    /* Clock Widget */
+    .clock-widget {
+      padding: 12px 6px;
+      margin-bottom: 8px;
+      transition: transform 0.12s ease-out;
+    }
+
+    .clock-time {
+      font-size: 58px;
+      font-weight: 300;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .clock-sub {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .clock-date {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+    }
+
+    .weather-pill {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Search Pill */
+    .search-pill {
+      height: 46px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 23px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease, transform 0.12s ease-out;
+    }
+
+    .search-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(0, 229, 255, 0.4);
+    }
+
+    .search-pill span {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.65);
+      flex: 1;
+    }
+
+    /* RAM Cleaner Widget */
+    .ram-widget {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease, transform 0.12s ease-out;
+    }
+
+    .ram-widget:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .ram-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ram-ring {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: var(--aqua-green);
+      border-right-color: var(--aqua-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
+    }
+
+    .ram-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .ram-status {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .ram-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--aqua-green);
+      background: rgba(48, 209, 88, 0.15);
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+
+    /* Home Grid Row (Folder + Icons) */
+    .home-split-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-top: 4px;
+    }
+
+    /* ColorOS Large Folder (2x2) */
+    .large-folder {
+      width: 156px;
+      height: 156px;
+      background: var(--glass-folder);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: 26px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 6px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .large-folder:active {
+      transform: scale(0.96);
+    }
+
+    .folder-label {
+      text-align: center;
+      font-size: 12px;
+      color: #fff;
+      font-weight: 500;
+      margin-top: 6px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    .mini-app {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .mini-app:hover {
+      transform: scale(1.12);
+    }
+
+    .mini-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mini-icon:after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    }
+
+    /* Regular App Grid Alongside */
+    .icon-subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 14px;
+    }
+
+    .app-icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .app-icon-item:active {
+      transform: scale(0.88);
+    }
+
+    .squircle-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--squircle-r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease-out;
+    }
+
+    .squircle-icon:after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+    }
+
+    .app-label {
+      font-size: 11.5px;
+      color: #fff;
+      font-weight: 400;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 68px;
+      text-align: center;
+    }
+
+    /* Page 2 Grid */
+    .page-2-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px 10px;
+      padding-top: 20px;
+    }
+
+    /* Page Indicators */
+    .page-indicators {
+      position: absolute;
+      bottom: 104px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      z-index: 20;
+    }
+
+    .page-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      transition: all 0.3s cubic-bezier(0.3, 1.4, 0.5, 1);
+      cursor: pointer;
+    }
+
+    .page-dot.active {
+      width: 18px;
+      background: var(--aqua-cyan);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    }
+
+    /* ColorOS Floating Dock */
+    .dock-container {
+      position: absolute;
+      bottom: 14px;
+      left: 16px;
+      right: 16px;
+      height: 84px;
+      background: var(--glass-dock);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 0 10px;
+      z-index: 30;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.12s ease-out;
+    }
+
+    .dock-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 19px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .dock-icon:active {
+      transform: scale(0.88);
+    }
+
+    .dock-icon:after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+    }
+
+    /* Bottom Home Indicator Bar */
+    .home-bar {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 2px;
+      z-index: 100;
+    }
+
+    /* Spatial App Launch Overlay */
+    .app-launch-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 200;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 46px;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.2);
+      transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .app-launch-screen.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .launch-icon-big {
+      width: 90px;
+      height: 90px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      margin-bottom: 20px;
+    }
+
+    .launch-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .launch-sub {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 30px;
+    }
+
+    .close-app-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* App Drawer Pull-up Sheet */
+    .drawer-sheet {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 10, 18, 0.88);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      padding: 50px 18px 24px 18px;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    .drawer-sheet.open {
+      transform: translateY(0);
+    }
+
+    .drawer-search {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .drawer-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px 10px;
+      overflow-y: auto;
+      padding-bottom: 30px;
+    }
+
+    .drawer-grid::-webkit-scrollbar { width: 0; }
+
+    /* Expanded Folder Dialog Modal */
+    .folder-dialog-scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 180;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .folder-dialog-scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .folder-dialog-card {
+      width: 320px;
+      background: rgba(22, 33, 62, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .folder-dialog-scrim.open .folder-dialog-card {
+      transform: scale(1);
+    }
+
+    .folder-dialog-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .folder-dialog-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 8px;
+    }
+
+    /* Swipe-Up Prompt */
+    .swipe-prompt {
+      position: absolute;
+      bottom: 98px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      animation: pulseUpDown 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseUpDown {
+      0%, 100% { transform: translate(-50%, 0); opacity: 0.5; }
+      50% { transform: translate(-50%, -4px); opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="showcase-header">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      Aquamorphic Design System • Android 8.0 - 15
+    </div>
+    <h1>ColorOS Mobile Launcher</h1>
+    <p class="subtitle">Full-depth parallax, 3D transition animations, and signature 2x2 Large Folders</p>
+  </div>
+
+  <div class="stage">
+
+    <!-- Interactive Phone Mockup -->
+    <div class="device-shell" id="deviceShell">
+      <div class="screen" id="screen">
+
+        <!-- Punch Hole Camera & Status Bar -->
+        <div class="punch-hole"></div>
+        <div class="status-bar">
+          <span id="statusClock">12:15</span>
+          <div class="status-icons">
+            <span>5G</span>
+            <span>📶</span>
+            <span>100% 🔋</span>
+          </div>
+        </div>
+
+        <!-- Multi-layer Parallax Wallpaper -->
+        <div class="wallpaper-layer" id="wallpaperLayer">
+          <div class="water-orb orb-1" id="orb1"></div>
+          <div class="water-orb orb-2" id="orb2"></div>
+          <div class="water-orb orb-3" id="orb3"></div>
+        </div>
+
+        <!-- 3D Pager Viewport -->
+        <div class="pager-viewport" id="pagerViewport">
+          <div class="page-stage" id="pageStage">
+
+            <!-- PAGE 1: Clock, Search, RAM Booster, Large Folder, Pinned Apps -->
+            <div class="page page-1" id="page1">
+
+              <!-- Aquamorphic Clock -->
+              <div class="clock-widget" id="clockWidget">
+                <div class="clock-time" id="bigClock">12:15</div>
+                <div class="clock-sub">
+                  <div class="clock-date" id="bigDate">Sun, Nov 15</div>
+                  <div class="weather-pill">
+                    <span>☀️</span>
+                    <span>24°C Sunny</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Search Pill -->
+              <div class="search-pill" id="searchPill" onclick="openDrawer()">
+                <span style="font-size: 16px;">🔍</span>
+                <span>Search apps, web & settings...</span>
+                <span style="font-size: 16px;">🎙️</span>
+              </div>
+
+              <!-- RAM Speed Booster Widget -->
+              <div class="ram-widget" id="ramWidget" onclick="boostRam()">
+                <div class="ram-left">
+                  <div class="ram-ring" id="ramRing">
+                    <span style="font-size: 11px;">⚡</span>
+                  </div>
+                  <div>
+                    <div class="ram-title" id="ramTitle">Speed Boost</div>
+                    <div class="ram-status" id="ramStatus">RAM Optimal: 68%</div>
+                  </div>
+                </div>
+                <div class="ram-badge" id="ramBadge">Boost</div>
+              </div>
+
+              <!-- Split Row: 2x2 Large Folder + 4 Icon Subgrid -->
+              <div class="home-split-row">
+
+                <!-- ColorOS Signature Large Folder (2x2) -->
+                <div>
+                  <div class="large-folder" id="largeFolder">
+                    <div class="mini-app" onclick="launchApp('ColorOS Camera', '📸', '#FF2D55', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #FF375F, #FF7597);">📸</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Photos Gallery', '🖼️', '#0A84FF', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #0A84FF, #00E5FF);">🖼️</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Music', '🎵', '#FF9F0A', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);">🎵</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('File Manager', '📁', '#30D158', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #30D158, #34C759);">📁</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Weather', '⛅', '#00C7BE', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #00C7BE, #32ADE6);">⛅</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Notes', '📝', '#BF5AF2', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #BF5AF2, #5E5CE6);">📝</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Calculator', '🔢', '#64D2FF', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #64D2FF, #0A84FF);">🔢</div>
+                    </div>
+                    <div class="mini-app" onclick="launchApp('Compass', '🧭', '#FF453A', event)">
+                      <div class="mini-icon" style="background: linear-gradient(135deg, #FF453A, #FF9F0A);">🧭</div>
+                    </div>
+                    <div class="mini-app" onclick="openFolderDialog(event)">
+                      <div class="mini-icon" style="background: rgba(255,255,255,0.15); font-size: 14px;">⋯</div>
+                    </div>
+                  </div>
+                  <div class="folder-label" onclick="openFolderDialog(event)">ColorOS Tools</div>
+                </div>
+
+                <!-- 4 Quick Apps alongside Folder -->
+                <div class="icon-subgrid">
+                  <div class="app-icon-item" onclick="launchApp('Settings', '⚙️', '#5E5CE6', event)">
+                    <div class="squircle-icon" style="background: linear-gradient(135deg, #5E5CE6, #BF5AF2);">⚙️</div>
+                    <div class="app-label">Settings</div>
+                  </div>
+                  <div class="app-icon-item" onclick="launchApp('Theme Store', '🎨', '#FF375F', event)">
+                    <div class="squircle-icon" style="background: linear-gradient(135deg, #FF375F, #FF7597);">🎨</div>
+                    <div class="app-label">Themes</div>
+                  </div>
+                  <div class="app-icon-item" onclick="launchApp('App Market', '🛍️', '#0A84FF', event)">
+                    <div class="squircle-icon" style="background: linear-gradient(135deg, #0A84FF, #00E5FF);">🛍️</div>
+                    <div class="app-label">Market</div>
+                  </div>
+                  <div class="app-icon-item" onclick="launchApp('Game Space', '🎮', '#30D158', event)">
+                    <div class="squircle-icon" style="background: linear-gradient(135deg, #30D158, #34C759);">🎮</div>
+                    <div class="app-label">Games</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- PAGE 2: Secondary App Grid -->
+            <div class="page page-2" id="page2">
+              <div class="page-2-grid">
+                <div class="app-icon-item" onclick="launchApp('YouTube', '▶️', '#FF0000', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #FF0000, #CC0000);">▶️</div>
+                  <div class="app-label">YouTube</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Gmail', '✉️', '#EA4335', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #EA4335, #FF7043);">✉️</div>
+                  <div class="app-label">Gmail</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Google Maps', '🗺️', '#34A853', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #34A853, #4CAF50);">🗺️</div>
+                  <div class="app-label">Maps</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Drive', '💾', '#4285F4', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #4285F4, #00E5FF);">💾</div>
+                  <div class="app-label">Drive</div>
+                </div>
+
+                <div class="app-icon-item" onclick="launchApp('Clock', '⏰', '#FF9F0A', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);">⏰</div>
+                  <div class="app-label">Clock</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Security', '🛡️', '#30D158', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #30D158, #00C7BE);">🛡️</div>
+                  <div class="app-label">Security</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Recorder', '🎙️', '#BF5AF2', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #BF5AF2, #5E5CE6);">🎙️</div>
+                  <div class="app-label">Recorder</div>
+                </div>
+                <div class="app-icon-item" onclick="launchApp('Smart Sidebar', '📱', '#0A84FF', event)">
+                  <div class="squircle-icon" style="background: linear-gradient(135deg, #0A84FF, #32ADE6);">📱</div>
+                  <div class="app-label">Sidebar</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Page Indicator Dots -->
+        <div class="page-indicators">
+          <div class="page-dot active" id="dot1" onclick="switchPage(0)"></div>
+          <div class="page-dot" id="dot2" onclick="switchPage(1)"></div>
+        </div>
+
+        <!-- Swipe Up Prompt -->
+        <div class="swipe-prompt">
+          <span>▲ Swipe up for App Drawer</span>
+        </div>
+
+        <!-- Floating Frosted Glass Dock -->
+        <div class="dock-container" id="dockContainer">
+          <div class="dock-icon" style="background: linear-gradient(135deg, #30D158, #34C759);" onclick="launchApp('Phone', '📞', '#30D158', event)">
+            📞
+          </div>
+          <div class="dock-icon" style="background: linear-gradient(135deg, #0A84FF, #00E5FF);" onclick="launchApp('Messages', '💬', '#0A84FF', event)">
+            💬
+          </div>
+          <div class="dock-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);" onclick="launchApp('Chrome', '🌐', '#FF9F0A', event)">
+            🌐
+          </div>
+          <div class="dock-icon" style="background: linear-gradient(135deg, #FF375F, #FF7597);" onclick="launchApp('Camera', '📷', '#FF375F', event)">
+            📷
+          </div>
+        </div>
+
+        <!-- Spatial App Launch Fullscreen Overlay -->
+        <div class="app-launch-screen" id="appLaunchScreen">
+          <div class="launch-icon-big" id="launchBigIcon">📱</div>
+          <div class="launch-title" id="launchTitle">App Name</div>
+          <div class="launch-sub" id="launchSub">ColorOS Quantum Spatial Expansion</div>
+          <button class="close-app-btn" onclick="closeApp()">Back to Home</button>
+        </div>
+
+        <!-- App Drawer Pull-up Sheet -->
+        <div class="drawer-sheet" id="drawerSheet">
+          <div class="drawer-search">
+            <span>🔍</span>
+            <input type="text" placeholder="Search 24 apps & settings..." id="drawerInput" oninput="filterDrawerApps()">
+            <span style="cursor: pointer;" onclick="closeDrawer()">✕</span>
+          </div>
+          <div class="drawer-grid" id="drawerGrid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Expanded Folder Dialog Modal -->
+        <div class="folder-dialog-scrim" id="folderDialogScrim" onclick="closeFolderDialog(event)">
+          <div class="folder-dialog-card" onclick="event.stopPropagation()">
+            <div class="folder-dialog-title">ColorOS Tools</div>
+            <div class="folder-dialog-grid">
+              <div class="app-icon-item" onclick="launchApp('Camera', '📸', '#FF375F', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #FF375F, #FF7597);">📸</div>
+                <div class="app-label">Camera</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Photos', '🖼️', '#0A84FF', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #0A84FF, #00E5FF);">🖼️</div>
+                <div class="app-label">Photos</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Music', '🎵', '#FF9F0A', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);">🎵</div>
+                <div class="app-label">Music</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Files', '📁', '#30D158', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #30D158, #34C759);">📁</div>
+                <div class="app-label">Files</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Weather', '⛅', '#00C7BE', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #00C7BE, #32ADE6);">⛅</div>
+                <div class="app-label">Weather</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Notes', '📝', '#BF5AF2', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #BF5AF2, #5E5CE6);">📝</div>
+                <div class="app-label">Notes</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Calculator', '🔢', '#64D2FF', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #64D2FF, #0A84FF);">🔢</div>
+                <div class="app-label">Calculator</div>
+              </div>
+              <div class="app-icon-item" onclick="launchApp('Compass', '🧭', '#FF453A', event); closeFolderDialog();">
+                <div class="squircle-icon" style="background: linear-gradient(135deg, #FF453A, #FF9F0A);">🧭</div>
+                <div class="app-label">Compass</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edge Navigation Bar -->
+        <div class="home-bar"></div>
+
+      </div>
+    </div>
+
+    <!-- Live Customizer & Animation Controls -->
+    <div class="controls-panel">
+      <h3>ColorOS Transitions</h3>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Active Transition:</span>
+          <strong id="activeTransitionLabel" style="color: var(--aqua-cyan)">3D Cube</strong>
+        </div>
+        <div class="btn-grid">
+          <div class="btn-chip active" onclick="setTransition('cube')">3D Cube</div>
+          <div class="btn-chip" onclick="setTransition('cylinder')">3D Cylinder</div>
+          <div class="btn-chip" onclick="setTransition('flip')">3D Flip</div>
+          <div class="btn-chip" onclick="setTransition('card')">Card Stack</div>
+          <div class="btn-chip" onclick="setTransition('wave')">Aqua Wave</div>
+          <div class="btn-chip" onclick="setTransition('slide')">Default Slide</div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="toggle-row">
+          <span>Gyro Depth Parallax</span>
+          <label class="switch">
+            <input type="checkbox" id="gyroToggle" checked onchange="toggleParallax(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>2x2 Large Folders</span>
+          <label class="switch">
+            <input type="checkbox" checked onchange="toggleLargeFolder(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">Quick Actions</div>
+        <div class="btn-grid" style="grid-template-columns: 1fr;">
+          <button class="btn-chip" style="padding: 10px;" onclick="switchPage(currentPage === 0 ? 1 : 0)">
+            🔄 Swipe Home Screen Page
+          </button>
+          <button class="btn-chip" style="padding: 10px;" onclick="openDrawer()">
+            📱 Open App Drawer
+          </button>
+          <button class="btn-chip" style="padding: 10px;" onclick="openFolderDialog()">
+            📂 Open Large Folder Modal
+          </button>
+        </div>
+      </div>
+
+      <div class="info-card">
+        💡 <strong>Interactive ColorOS Mechanics:</strong><br>
+        • Move your cursor around the phone to test <strong>Gyroscope Multi-Layer Depth Parallax</strong>.<br>
+        • Click any mini icon inside the <strong>2x2 Large Folder</strong> to launch immediately without opening.<br>
+        • Test 3D Cube, Cylinder, Flip, and Wave transition effects!
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State Variables
+    let currentPage = 0;
+    let currentTransition = 'cube';
+    let parallaxEnabled = true;
+    let targetTiltX = 0;
+    let targetTiltY = 0;
+    let currentTiltX = 0;
+    let currentTiltY = 0;
+
+    // Elements
+    const deviceShell = document.getElementById('deviceShell');
+    const wallpaperLayer = document.getElementById('wallpaperLayer');
+    const orb1 = document.getElementById('orb1');
+    const orb2 = document.getElementById('orb2');
+    const pageStage = document.getElementById('pageStage');
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const dot1 = document.getElementById('dot1');
+    const dot2 = document.getElementById('dot2');
+    const appLaunchScreen = document.getElementById('appLaunchScreen');
+    const drawerSheet = document.getElementById('drawerSheet');
+    const folderDialogScrim = document.getElementById('folderDialogScrim');
+
+    // Clock update
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${hours}:${minutes}`;
+      document.getElementById('statusClock').textContent = timeStr;
+      document.getElementById('bigClock').textContent = timeStr;
+
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      document.getElementById('bigDate').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Mouse / Pointer Parallax 3D Engine
+    window.addEventListener('mousemove', (e) => {
+      if (!parallaxEnabled) return;
+      const rect = deviceShell.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      targetTiltX = (e.clientX - centerX) / (window.innerWidth / 2);
+      targetTiltY = (e.clientY - centerY) / (window.innerHeight / 2);
+      targetTiltX = Math.max(-1, Math.min(1, targetTiltX));
+      targetTiltY = Math.max(-1, Math.min(1, targetTiltY));
+    });
+
+    // Mobile Device Orientation Support
+    window.addEventListener('deviceorientation', (e) => {
+      if (!parallaxEnabled || !e.gamma || !e.beta) return;
+      targetTiltX = Math.max(-1, Math.min(1, e.gamma / 30));
+      targetTiltY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+    });
+
+    // Animation Loop for Smooth Gyro Damping
+    function renderParallax() {
+      if (parallaxEnabled) {
+        currentTiltX += (targetTiltX - currentTiltX) * 0.08;
+        currentTiltY += (targetTiltY - currentTiltY) * 0.08;
+
+        // Device shell slight tilt
+        deviceShell.style.transform = `rotateY(${currentTiltX * 7}deg) rotateX(${-currentTiltY * 7}deg)`;
+
+        // Multi-plane parallax translations
+        // Deep background layer (0.2x)
+        wallpaperLayer.style.transform = `translate(${currentTiltX * 12}px, ${currentTiltY * 12}px) scale(1.15)`;
+        // Midground fluid orbs (0.45x)
+        orb1.style.transform = `translate(${currentTiltX * 24}px, ${currentTiltY * 20}px)`;
+        orb2.style.transform = `translate(${currentTiltX * -20}px, ${currentTiltY * -18}px)`;
+      } else {
+        deviceShell.style.transform = 'none';
+        wallpaperLayer.style.transform = 'none';
+        orb1.style.transform = 'none';
+        orb2.style.transform = 'none';
+      }
+      requestAnimationFrame(renderParallax);
+    }
+    requestAnimationFrame(renderParallax);
+
+    // Page Switching with ColorOS Animations
+    function switchPage(pageIndex) {
+      currentPage = pageIndex;
+      applyPageTransition();
+
+      dot1.classList.toggle('active', pageIndex === 0);
+      dot2.classList.toggle('active', pageIndex === 1);
+    }
+
+    function setTransition(type) {
+      currentTransition = type;
+      document.querySelectorAll('.btn-chip').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.btn-chip')).find(b => b.textContent.toLowerCase().includes(type));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const labels = {
+        cube: '3D Cube',
+        cylinder: '3D Cylinder',
+        flip: '3D Flip',
+        card: 'Card Stack',
+        wave: 'Aqua Wave',
+        slide: 'Default Slide'
+      };
+      document.getElementById('activeTransitionLabel').textContent = labels[type] || type;
+      applyPageTransition();
+    }
+
+    function applyPageTransition() {
+      const p1 = page1;
+      const p2 = page2;
+
+      // Reset base transitions
+      p1.style.transition = 'all 0.55s cubic-bezier(0.2, 0.8, 0.25, 1)';
+      p2.style.transition = 'all 0.55s cubic-bezier(0.2, 0.8, 0.25, 1)';
+
+      if (currentTransition === 'cube') {
+        // ColorOS 3D Cube: 90 deg rotation with perspective pivot
+        if (currentPage === 0) {
+          p1.style.transformOrigin = 'right center';
+          p1.style.transform = 'rotateY(0deg) translateZ(0)';
+          p1.style.opacity = '1';
+
+          p2.style.transformOrigin = 'left center';
+          p2.style.transform = 'rotateY(90deg) translateZ(0)';
+          p2.style.opacity = '0';
+        } else {
+          p1.style.transformOrigin = 'right center';
+          p1.style.transform = 'rotateY(-90deg) translateZ(0)';
+          p1.style.opacity = '0';
+
+          p2.style.transformOrigin = 'left center';
+          p2.style.transform = 'rotateY(0deg) translateZ(0)';
+          p2.style.opacity = '1';
+        }
+      } else if (currentTransition === 'cylinder') {
+        // ColorOS 3D Cylinder / Roll
+        if (currentPage === 0) {
+          p1.style.transform = 'rotateY(0deg) scale(1) translateX(0)';
+          p1.style.opacity = '1';
+          p2.style.transform = 'rotateY(55deg) scale(0.85) translateX(100%)';
+          p2.style.opacity = '0';
+        } else {
+          p1.style.transform = 'rotateY(-55deg) scale(0.85) translateX(-100%)';
+          p1.style.opacity = '0';
+          p2.style.transform = 'rotateY(0deg) scale(1) translateX(0)';
+          p2.style.opacity = '1';
+        }
+      } else if (currentTransition === 'flip') {
+        // ColorOS 3D Flip
+        p1.style.transformOrigin = 'center center';
+        p2.style.transformOrigin = 'center center';
+        if (currentPage === 0) {
+          p1.style.transform = 'rotateY(0deg)';
+          p1.style.opacity = '1';
+          p2.style.transform = 'rotateY(180deg)';
+          p2.style.opacity = '0';
+        } else {
+          p1.style.transform = 'rotateY(-180deg)';
+          p1.style.opacity = '0';
+          p2.style.transform = 'rotateY(0deg)';
+          p2.style.opacity = '1';
+        }
+      } else if (currentTransition === 'card') {
+        // ColorOS Card Stack
+        if (currentPage === 0) {
+          p1.style.transform = 'scale(1) translateX(0)';
+          p1.style.opacity = '1';
+          p2.style.transform = 'scale(0.88) translateX(100%)';
+          p2.style.opacity = '0.4';
+        } else {
+          p1.style.transform = 'scale(0.86) translateZ(-80px)';
+          p1.style.opacity = '0.3';
+          p2.style.transform = 'scale(1) translateX(0)';
+          p2.style.opacity = '1';
+        }
+      } else if (currentTransition === 'wave') {
+        // Aquamorphic Wave
+        if (currentPage === 0) {
+          p1.style.transform = 'translateX(0) rotate(0deg) scale(1)';
+          p1.style.opacity = '1';
+          p2.style.transform = 'translateX(100%) rotate(4deg) scale(0.92)';
+          p2.style.opacity = '0';
+        } else {
+          p1.style.transform = 'translateX(-100%) rotate(-4deg) scale(0.92)';
+          p1.style.opacity = '0';
+          p2.style.transform = 'translateX(0) rotate(0deg) scale(1)';
+          p2.style.opacity = '1';
+        }
+      } else {
+        // Default Linear Slide
+        p1.style.transform = currentPage === 0 ? 'translateX(0)' : 'translateX(-100%)';
+        p1.style.opacity = currentPage === 0 ? '1' : '0';
+        p2.style.transform = currentPage === 1 ? 'translateX(0)' : 'translateX(100%)';
+        p2.style.opacity = currentPage === 1 ? '1' : '0';
+      }
+    }
+
+    // Touch Swipe Gesture on Phone Viewport
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const viewport = document.getElementById('pagerViewport');
+
+    viewport.addEventListener('mousedown', (e) => {
+      touchStartX = e.clientX;
+      touchStartY = e.clientY;
+    });
+
+    viewport.addEventListener('mouseup', (e) => {
+      const diffX = e.clientX - touchStartX;
+      const diffY = e.clientY - touchStartY;
+
+      if (Math.abs(diffX) > 40) {
+        if (diffX < 0 && currentPage === 0) switchPage(1);
+        else if (diffX > 0 && currentPage === 1) switchPage(0);
+      } else if (diffY < -50) {
+        openDrawer();
+      }
+    });
+
+    // ColorOS Quantum Animation Engine: Spatial App Launch
+    function launchApp(name, icon, color, event) {
+      if (event) event.stopPropagation();
+
+      const launchScreen = document.getElementById('appLaunchScreen');
+      const bigIcon = document.getElementById('launchBigIcon');
+      const title = document.getElementById('launchTitle');
+
+      bigIcon.textContent = icon;
+      bigIcon.style.background = `linear-gradient(135deg, ${color}, #0A84FF)`;
+      title.textContent = name;
+
+      launchScreen.classList.add('active');
+      wallpaperLayer.style.filter = 'blur(18px)';
+    }
+
+    function closeApp() {
+      const launchScreen = document.getElementById('appLaunchScreen');
+      launchScreen.classList.remove('active');
+      wallpaperLayer.style.filter = 'blur(0px)';
+    }
+
+    // App Drawer Pull-up
+    function openDrawer() {
+      drawerSheet.classList.add('open');
+      wallpaperLayer.style.filter = 'blur(20px)';
+      populateDrawerApps();
+    }
+
+    function closeDrawer() {
+      drawerSheet.classList.remove('open');
+      wallpaperLayer.style.filter = 'blur(0px)';
+    }
+
+    // Populate Drawer
+    const sampleApps = [
+      { name: 'App Market', icon: '🛍️', color: '#0A84FF' },
+      { name: 'Calculator', icon: '🔢', color: '#64D2FF' },
+      { name: 'Camera', icon: '📷', color: '#FF375F' },
+      { name: 'Chrome', icon: '🌐', color: '#FF9F0A' },
+      { name: 'Clock', icon: '⏰', color: '#FF9F0A' },
+      { name: 'Compass', icon: '🧭', color: '#FF453A' },
+      { name: 'Drive', icon: '💾', color: '#4285F4' },
+      { name: 'Files', icon: '📁', color: '#30D158' },
+      { name: 'Game Space', icon: '🎮', color: '#30D158' },
+      { name: 'Gmail', icon: '✉️', color: '#EA4335' },
+      { name: 'Maps', icon: '🗺️', color: '#34A853' },
+      { name: 'Messages', icon: '💬', color: '#0A84FF' },
+      { name: 'Music', icon: '🎵', color: '#FF9F0A' },
+      { name: 'Notes', icon: '📝', color: '#BF5AF2' },
+      { name: 'Phone', icon: '📞', color: '#30D158' },
+      { name: 'Photos', icon: '🖼️', color: '#0A84FF' },
+      { name: 'Recorder', icon: '🎙️', color: '#BF5AF2' },
+      { name: 'Security', icon: '🛡️', color: '#30D158' },
+      { name: 'Settings', icon: '⚙️', color: '#5E5CE6' },
+      { name: 'Themes', icon: '🎨', color: '#FF375F' },
+      { name: 'Weather', icon: '⛅', color: '#00C7BE' },
+      { name: 'YouTube', icon: '▶️', color: '#FF0000' }
+    ];
+
+    function populateDrawerApps(filter = '') {
+      const grid = document.getElementById('drawerGrid');
+      grid.innerHTML = '';
+      const list = filter
+        ? sampleApps.filter(a => a.name.toLowerCase().includes(filter.toLowerCase()))
+        : sampleApps;
+
+      list.forEach(app => {
+        const item = document.createElement('div');
+        item.className = 'app-icon-item';
+        item.onclick = (e) => {
+          closeDrawer();
+          launchApp(app.name, app.icon, app.color, e);
+        };
+        item.innerHTML = `
+          <div class="squircle-icon" style="background: linear-gradient(135deg, ${app.color}, #0A84FF);">${app.icon}</div>
+          <div class="app-label">${app.name}</div>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    function filterDrawerApps() {
+      const query = document.getElementById('drawerInput').value;
+      populateDrawerApps(query);
+    }
+
+    // Large Folder Modal
+    function openFolderDialog(event) {
+      if (event) event.stopPropagation();
+      folderDialogScrim.classList.add('open');
+      wallpaperLayer.style.filter = 'blur(20px)';
+    }
+
+    function closeFolderDialog(event) {
+      if (event) event.stopPropagation();
+      folderDialogScrim.classList.remove('open');
+      wallpaperLayer.style.filter = 'blur(0px)';
+    }
+
+    // RAM Booster
+    function boostRam() {
+      const ring = document.getElementById('ramRing');
+      const title = document.getElementById('ramTitle');
+      const status = document.getElementById('ramStatus');
+      const badge = document.getElementById('ramBadge');
+
+      ring.style.transform = 'rotate(720deg)';
+      badge.textContent = 'Boosting...';
+
+      setTimeout(() => {
+        title.textContent = 'System Optimal';
+        status.textContent = '480 MB Released • 48%';
+        badge.textContent = 'Optimized';
+        badge.style.background = 'rgba(0, 229, 255, 0.2)';
+        badge.style.color = 'var(--aqua-cyan)';
+      }, 700);
+    }
+
+    // Toggles
+    function toggleParallax(enabled) {
+      parallaxEnabled = enabled;
+      if (!enabled) {
+        targetTiltX = 0;
+        targetTiltY = 0;
+      }
+    }
+
+    function toggleLargeFolder(enabled) {
+      const folder = document.getElementById('largeFolder');
+      const label = document.querySelector('.folder-label');
+      folder.style.display = enabled ? 'grid' : 'none';
+      label.style.display = enabled ? 'block' : 'none';
+    }
+
+    // Initialize Page
+    switchPage(0);
+    populateDrawerApps();
+  </script>
+</body>
+</html>

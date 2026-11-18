@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">ColorOS Launcher</string>
+    <string name="launcher_settings">Home Screen &amp; Lock Screen Settings</string>
+    <string name="search_apps">Search apps, widgets, &amp; settings</string>
+    <string name="shelf_title">ColorOS Shelf</string>
+    <string name="page_transition">Page Transition Effect</string>
+    <string name="depth_parallax">Wallpaper 3D Depth Parallax</string>
+    <string name="sensor_depth">Gyroscope Dynamic Tilt</string>
+    <string name="large_folders">Enable Large Folders (2x2)</string>
+    <string name="icon_shape">Icon Shape &amp; Style</string>
+    <string name="grid_layout">Home Screen Grid</string>
+    <string name="set_default_home">Set as Default Launcher</string>
+    <string name="default_home_desc">Make ColorOS Launcher your primary home screen</string>
+    <string name="clear_ram">Speed Boost</string>
+    <string name="ram_cleaned">System memory optimized smoothly</string>
+    <string name="transition_default">Default (Slide)</string>
+    <string name="transition_cube">3D Cube</string>
+    <string name="transition_cylinder">3D Cylinder (Roll)</string>
+    <string name="transition_flip">3D Flip</string>
+    <string name="transition_card">Card Stack</string>
+    <string name="transition_wave">Aquamorphic Wave</string>
+</resources>
